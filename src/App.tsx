@@ -1,6 +1,5 @@
-import React from 'react'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
-import Dashboard from './pages/Dashboard'
+import Dashboard from './pages/DashboardPage'
 import EmailDetail from './pages/EmailDetail'
 
 export default function App() {
