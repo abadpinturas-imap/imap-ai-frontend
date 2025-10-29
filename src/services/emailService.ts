@@ -1,14 +1,18 @@
+// src/services/emailService.ts
 import { api } from './api';
 import { EmailListResponse, EmailDetailResponse } from '../types/api';
 
-export const emailServices = {
+const clean = (params?: Record<string, any>) =>
+  Object.fromEntries(Object.entries(params ?? {}).filter(([, v]) => v && String(v).trim() !== ''));
+
+export const emailService = {
   async list(params?: { category?: string; startDate?: string; endDate?: string }) {
-    const response = await api.get<EmailListResponse>('/emails/list', { params });
-    return response.data;
+    const { data } = await api.get<EmailListResponse>('/emails/list', { params: clean(params) });
+    return data; // { results, total }
   },
 
   async getById(id: number) {
-    const response = await api.get<EmailDetailResponse>(`/emails/${id}`);
-    return response.data;
+    const { data } = await api.get<EmailDetailResponse>(`/emails/${id}`);
+    return data; // { email }
   },
 };
