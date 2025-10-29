@@ -1,28 +1,69 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import axios from 'axios';
+import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { Email } from '../types';
+import { emailServices } from '../services/emailService'
+import { ApiError } from '../types/api';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';
+interface EmailState {
+  data: Email[];
+  total: number;
+  loading: boolean;
+  error: string | null;
+  selectedEmail: Email | null;
+}
 
-export const fetchEmails = createAsyncThunk('emails/fetchEmails', async (params = {}) => {
-  const res = await axios.get(`${API_URL}/emails/list`, { params });
-  return res.data;
+const initialState: EmailState = {
+  data: [],
+  total: 0,
+  loading: false,
+  error: null,
+  selectedEmail: null,
+};
+
+// ✅ fetchEmails — con soporte de filtros y backend real
+export const fetchEmails = createAsyncThunk<
+  Email[],
+  { category?: string; startDate?: string; endDate?: string } | undefined,
+  { rejectValue: ApiError }
+>('emails/fetchEmails', async (filters = {}, { rejectWithValue }) => {
+  try {
+    const res = await emailServices.list(filters);
+    return res.results;
+  } catch (err: any) {
+    return rejectWithValue({
+      message: err.response?.data?.detail || 'Error al obtener los correos',
+      status: err.response?.status,
+    });
+  }
+});
+
+// ✅ fetchEmailById — para el modal de detalle (si quieres cargarlo directo del backend)
+export const fetchEmailById = createAsyncThunk<
+  Email,
+  number,
+  { rejectValue: ApiError }
+>('emails/fetchEmailById', async (id, { rejectWithValue }) => {
+  try {
+    const res = await emailServices.getById(id);
+    return res.email;
+  } catch (err: any) {
+    return rejectWithValue({
+      message: err.response?.data?.detail || 'Error al obtener el correo',
+      status: err.response?.status,
+    });
+  }
 });
 
 const emailSlice = createSlice({
   name: 'emails',
-  initialState: {
-    data: [],
-    loading: false,
-    error: null,
-    selectedEmail: null,
-  },
+  initialState,
   reducers: {
-    selectEmail: (state, action) => {
+    selectEmail(state, action: PayloadAction<Email | null>) {
       state.selectedEmail = action.payload;
     },
   },
   extraReducers: (builder) => {
     builder
+      // fetchEmails
       .addCase(fetchEmails.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -30,10 +71,16 @@ const emailSlice = createSlice({
       .addCase(fetchEmails.fulfilled, (state, action) => {
         state.loading = false;
         state.data = action.payload;
+        state.total = action.payload.length; // o res.total si el backend lo devuelve
       })
       .addCase(fetchEmails.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message;
+        state.error = action.payload?.message || 'Error cargando correos';
+      })
+
+      // fetchEmailById
+      .addCase(fetchEmailById.fulfilled, (state, action) => {
+        state.selectedEmail = action.payload;
       });
   },
 });
