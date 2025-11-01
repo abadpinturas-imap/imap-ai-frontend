@@ -24,6 +24,7 @@ export default function DashboardPage() {
   const [category, setCategory] = useState('');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
+  const [searchText, setSearchText] = useState("");
 
   useEffect(() => {
     dispatch(fetchEmails({ category, startDate, endDate }));
@@ -31,6 +32,15 @@ export default function DashboardPage() {
 
   if (loading) return <CircularProgress />;
   if (error) return <Typography color="error">{error}</Typography>;
+
+  const filtered = data.filter((e) => {
+    const t = searchText.toLowerCase();
+    return (
+      (e.sender || '').toLowerCase().includes(t) ||
+      (e.subject || '').toLowerCase().includes(t) ||
+      (e.body || '').toLowerCase().includes(t)
+    );
+  });
 
   return (
     <Box p={2}>
@@ -76,6 +86,16 @@ export default function DashboardPage() {
           value={endDate}
           onChange={(e) => setEndDate(e.target.value)}
         />
+
+        {/* >>> NUEVO input de búsqueda */}
+        <TextField
+          label="Buscar texto"
+          size="small"
+          value={searchText}
+          onChange={(e) => setSearchText(e.target.value)}
+          sx={{ width: 200 }}
+        />      
+
         <Button
           variant="outlined"
           onClick={() => {
@@ -90,7 +110,7 @@ export default function DashboardPage() {
 
       {/* Tabla */}
       <EmailTable
-        emails={data}
+        emails={filtered}
         onSelect={(email) => dispatch(selectEmail(email))}
       />
 

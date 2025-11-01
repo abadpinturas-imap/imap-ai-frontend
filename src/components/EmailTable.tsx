@@ -24,6 +24,7 @@ export default function EmailTable({ emails, onSelect }: Props) {
     { field: 'id', headerName: 'ID', width: 80 },
     { field: 'sender', headerName: 'Remitente', flex: 1 },
     { field: 'subject', headerName: 'Asunto', flex: 1 },
+    { field: 'body', headerName: 'Contenido', flex: 2, sortable:false },
     { field: 'classification_code', headerName: 'Clasificación', flex: 1 },
     
     {

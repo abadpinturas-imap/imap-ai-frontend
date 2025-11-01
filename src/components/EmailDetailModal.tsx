@@ -16,7 +16,7 @@ import { getAttachmentsByEmail } from '../services/emailService';
 
 interface Props {
   open: boolean;
-  email?: Email;
+  email: Email | null;   // <<< aquí
   onClose: () => void;
 }
 
