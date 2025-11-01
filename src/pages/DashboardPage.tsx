@@ -54,9 +54,10 @@ export default function DashboardPage() {
           sx={{ width: 200 }}
         >
           <MenuItem value="">Todas</MenuItem>
-          <MenuItem value="cliente">Cliente</MenuItem>
-          <MenuItem value="proveedor">Proveedor</MenuItem>
-          <MenuItem value="administrativo">Administrativo</MenuItem>
+          <MenuItem value="CLIENTES">Clientes</MenuItem>
+          <MenuItem value="PROVEEDORES">Proveedores</MenuItem>
+          <MenuItem value="BANCOS">Bancos</MenuItem>
+          <MenuItem value="VARIOS">Varios</MenuItem>
         </TextField>
 
         <TextField

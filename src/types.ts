@@ -1,6 +1,7 @@
 export interface Attachment {
-  filename: string;
-  url: string;
+  file_name: string;
+  file_url: string;
+  content_type: string;
 }
 
 export interface Email {

@@ -16,3 +16,8 @@ export const emailService = {
     return data; // { email }
   },
 };
+
+export async function getAttachmentsByEmail(emailId: number) {
+  const res = await api.get(`/emails/${emailId}/attachments`);
+  return res.data;
+}

@@ -10,7 +10,9 @@ import {
   ListItemText,
   Divider,
 } from '@mui/material';
-import { Email } from '../types';
+import { Email, Attachment } from '../types';
+import { useEffect, useState } from 'react';
+import { getAttachmentsByEmail } from '../services/emailService';
 
 interface Props {
   open: boolean;
@@ -19,6 +21,17 @@ interface Props {
 }
 
 export default function EmailDetailModal({ open, email, onClose }: Props) {
+  const [attachments, setAttachments] = useState<Attachment[]>([]);
+
+  useEffect(() => {
+    if (email) {
+      getAttachmentsByEmail(email.id).then((rows) => {
+        console.log("ATTACHMENTS:", rows);
+        setAttachments(rows);
+      })
+    }
+  }, [email])
+
   if (!email) return null;
 
   return (
@@ -41,20 +54,20 @@ export default function EmailDetailModal({ open, email, onClose }: Props) {
           {email.body || 'Sin contenido disponible.'}
         </Typography>
 
-        {email.attachments && email.attachments.length > 0 && (
+        {attachments.length > 0 && (
           <>
             <Divider sx={{ my: 2 }} />
             <Typography variant="h6" mb={1}>
               📎 Adjuntos
             </Typography>
             <List dense>
-              {email.attachments.map((file, i) => (
+              {attachments.map((att, i) => (
                 <ListItem key={i}>
                   <ListItemText
-                    primary={file.filename}
+                    primary={att.file_name}
                     secondary={
                       <Button
-                        href={file.url}
+                        href={att.file_url}
                         target="_blank"
                         rel="noopener noreferrer"
                         size="small"
