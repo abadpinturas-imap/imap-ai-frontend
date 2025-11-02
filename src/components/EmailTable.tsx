@@ -58,13 +58,34 @@ export default function EmailTable({ emails, onSelect }: Props) {
   ];
 
   return (
-    <Box height={500}>
+    <Box 
+      sx={{
+        width: "100%",
+        overflowX: "auto",
+        "& .MuiDataGrid-root": {
+          minWidth: 900   // así no se aplastan columnas
+        }
+      }}
+    >
       <DataGrid
         rows={emails}
         columns={columns}
         getRowId={(r) => r.id}
         onRowClick={(params) => onSelect(params.row)}
         disableRowSelectionOnClick
+        sx={{
+          '& .MuiDataGrid-columnHeaders': {
+            backgroundColor: '#f1f5f9',   // slate-100
+            fontWeight: '600',
+            borderBottom: '1px solid #cbd5e1', // slate-300
+          },
+          '& .MuiDataGrid-row:nth-of-type(odd)': {
+            backgroundColor: '#f8fafc',   // slate-50
+          },
+          '& .MuiDataGrid-row:hover': {
+            backgroundColor: '#e2e8f0',   // slate-200
+          },
+        }}
       />
     </Box>
   );
